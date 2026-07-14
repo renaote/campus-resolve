@@ -1,0 +1,10 @@
+# Ignoring this in case I ever add real passwords to a local config file
+config/local.php
+
+# OS clutter
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
