@@ -53,6 +53,10 @@ function getCategoryKeywords(): array {
 // Looks through the complaint text and counts how many keywords match
 // each category. Whichever category has the most matches wins. If nothing
 // matches at all, it falls back to "Unclassified" rather than guessing.
+//
+// Known limitation: when two categories tie, this picks whichever one
+// appears first in the array above - it doesn't try to break the tie any
+// smarter than that. Worth mentioning in the README.
 function detectCategory(string $text): string {
     $text = strtolower($text);
     $keywordsByCategory = getCategoryKeywords();
@@ -78,10 +82,81 @@ function detectCategory(string $text): string {
         }
     }
 
-    // Nothing matched any keyword list at all
     if ($bestScore === 0) {
         return 'Unclassified';
     }
 
     return $bestCategory;
+}
+
+// Calculates an urgency score from 0-100 based on the complaint text and
+// the yes/no answers from the form. Higher score = more urgent. Capped at
+// 100 so one complaint hitting every rule doesn't break the priority math.
+function calculateUrgencyScore(
+    string $text,
+    bool $isImmediateDanger,
+    bool $affectsMultipleStudents,
+    bool $wasPreviouslyReported
+): int {
+    $text = strtolower($text);
+    $score = 0;
+
+    if ($isImmediateDanger) {
+        $score += 40;
+    }
+
+    $safetyWords = ['unsafe', 'threat', 'threatened', 'assault', 'security', 'danger'];
+    foreach ($safetyWords as $word) {
+        if (str_contains($text, $word)) {
+            $score += 25;
+            break; // only count this once, even if multiple safety words appear
+        }
+    }
+
+    $timeWords = ['exam tomorrow', 'deadline', 'closes tomorrow', 'closes today', 'graduation'];
+    foreach ($timeWords as $word) {
+        if (str_contains($text, $word)) {
+            $score += 20;
+            break;
+        }
+    }
+
+    $essentialServiceWords = ['no water', 'no electricity', 'portal unavailable', 'account blocked'];
+    foreach ($essentialServiceWords as $word) {
+        if (str_contains($text, $word)) {
+            $score += 15;
+            break;
+        }
+    }
+
+    if ($affectsMultipleStudents) {
+        $score += 10;
+    }
+
+    if ($wasPreviouslyReported) {
+        $score += 10;
+    }
+
+    // Cap at 100 so scores never go above the scale
+    return min($score, 100);
+}
+
+// Turns the 0-100 urgency score into a priority label. Immediate danger
+// always forces Critical, even if the score itself came out lower than
+// 75 - a student saying "I'm in danger" shouldn't get downgraded just
+// because their wording didn't match every scoring keyword.
+function determinePriority(int $urgencyScore, bool $isImmediateDanger): string {
+    if ($isImmediateDanger) {
+        return 'Critical';
+    }
+
+    if ($urgencyScore >= 75) {
+        return 'Critical';
+    } elseif ($urgencyScore >= 50) {
+        return 'High';
+    } elseif ($urgencyScore >= 25) {
+        return 'Medium';
+    } else {
+        return 'Low';
+    }
 }

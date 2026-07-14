@@ -9,6 +9,9 @@
         <?php if (isset($_GET['category'])): ?>
             <p>Detected category: <strong><?= htmlspecialchars($_GET['category']) ?></strong></p>
         <?php endif; ?>
+        <?php if (isset($_GET['priority'])): ?>
+            <p>Priority: <strong><?= htmlspecialchars($_GET['priority']) ?></strong></p>
+        <?php endif; ?>
         <p>Save this number - you'll need it to track your complaint.</p>
     </div>
 <?php endif; ?>

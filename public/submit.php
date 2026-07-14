@@ -23,20 +23,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         $referenceNumber = generateReferenceNumber($pdo);
+        $fullText = $title . ' ' . $description;
 
-        // Run the text through the category detector - combining title and
-        // description gives it more words to match keywords against
-        $detectedCategory = detectCategory($title . ' ' . $description);
+        $detectedCategory = detectCategory($fullText);
+
+        $urgencyScore = calculateUrgencyScore(
+            $fullText,
+            (bool) $isImmediateDanger,
+            (bool) $affectsMultiple,
+            (bool) $wasPreviouslyReported
+        );
+
+        $priority = determinePriority($urgencyScore, (bool) $isImmediateDanger);
 
         $stmt = $pdo->prepare("
             INSERT INTO complaints
                 (reference_number, title, description, detected_category,
-                 is_immediate_danger, affects_multiple_students,
-                 was_previously_reported, is_anonymous, student_name, student_email)
+                 urgency_score, priority, is_immediate_danger,
+                 affects_multiple_students, was_previously_reported,
+                 is_anonymous, student_name, student_email)
             VALUES
                 (:reference_number, :title, :description, :detected_category,
-                 :is_immediate_danger, :affects_multiple_students,
-                 :was_previously_reported, :is_anonymous, :student_name, :student_email)
+                 :urgency_score, :priority, :is_immediate_danger,
+                 :affects_multiple_students, :was_previously_reported,
+                 :is_anonymous, :student_name, :student_email)
         ");
 
         $stmt->execute([
@@ -44,6 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => $title,
             'description' => $description,
             'detected_category' => $detectedCategory,
+            'urgency_score' => $urgencyScore,
+            'priority' => $priority,
             'is_immediate_danger' => $isImmediateDanger,
             'affects_multiple_students' => $affectsMultiple,
             'was_previously_reported' => $wasPreviouslyReported,
@@ -52,7 +64,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'student_email' => $isAnonymous ? null : $studentEmail,
         ]);
 
-        header('Location: index.php?submitted=1&ref=' . urlencode($referenceNumber) . '&category=' . urlencode($detectedCategory));
+        header('Location: index.php?submitted=1'
+            . '&ref=' . urlencode($referenceNumber)
+            . '&category=' . urlencode($detectedCategory)
+            . '&priority=' . urlencode($priority));
         exit;
     }
 }
