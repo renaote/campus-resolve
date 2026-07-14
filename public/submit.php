@@ -4,8 +4,6 @@ require '../includes/functions.php';
 
 $errors = [];
 
-// Only try to save something if the form was actually submitted (POST),
-// not just when someone visits the page normally (GET)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
@@ -16,8 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $studentName = trim($_POST['student_name'] ?? '');
     $studentEmail = trim($_POST['student_email'] ?? '');
 
-    // Basic validation - title and description are the two things
-    // the whole classification engine depends on, so they can't be empty
     if ($title === '') {
         $errors[] = 'Please enter a title for your complaint.';
     }
@@ -28,21 +24,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $referenceNumber = generateReferenceNumber($pdo);
 
+        // Run the text through the category detector - combining title and
+        // description gives it more words to match keywords against
+        $detectedCategory = detectCategory($title . ' ' . $description);
+
         $stmt = $pdo->prepare("
             INSERT INTO complaints
-                (reference_number, title, description, is_immediate_danger,
-                 affects_multiple_students, was_previously_reported, is_anonymous,
-                 student_name, student_email)
+                (reference_number, title, description, detected_category,
+                 is_immediate_danger, affects_multiple_students,
+                 was_previously_reported, is_anonymous, student_name, student_email)
             VALUES
-                (:reference_number, :title, :description, :is_immediate_danger,
-                 :affects_multiple_students, :was_previously_reported, :is_anonymous,
-                 :student_name, :student_email)
+                (:reference_number, :title, :description, :detected_category,
+                 :is_immediate_danger, :affects_multiple_students,
+                 :was_previously_reported, :is_anonymous, :student_name, :student_email)
         ");
 
         $stmt->execute([
             'reference_number' => $referenceNumber,
             'title' => $title,
             'description' => $description,
+            'detected_category' => $detectedCategory,
             'is_immediate_danger' => $isImmediateDanger,
             'affects_multiple_students' => $affectsMultiple,
             'was_previously_reported' => $wasPreviouslyReported,
@@ -51,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'student_email' => $isAnonymous ? null : $studentEmail,
         ]);
 
-        header('Location: index.php?submitted=1&ref=' . urlencode($referenceNumber));
+        header('Location: index.php?submitted=1&ref=' . urlencode($referenceNumber) . '&category=' . urlencode($detectedCategory));
         exit;
     }
 }

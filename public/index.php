@@ -6,6 +6,9 @@
     <div>
         <p>Complaint submitted successfully.</p>
         <p>Your reference number: <strong><?= htmlspecialchars($_GET['ref']) ?></strong></p>
+        <?php if (isset($_GET['category'])): ?>
+            <p>Detected category: <strong><?= htmlspecialchars($_GET['category']) ?></strong></p>
+        <?php endif; ?>
         <p>Save this number - you'll need it to track your complaint.</p>
     </div>
 <?php endif; ?>
