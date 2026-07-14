@@ -10,7 +10,7 @@ Format: As a `<role>`, I want `<goal>`, so that `<benefit>`.
 5. As a student, I want to see what category and priority my complaint was given, so that I know it's actually been looked at.
 6. As a student, I want to track my complaint using my reference number, so that I can check its status without having to contact anyone.
 
-## Automatic triage
+## Automatic classification
 7. As the system, I want to scan the complaint text for keywords, so that I can guess which category it belongs to without a human reading it first.
 8. As the system, I want to calculate an urgency score based on the text and the student's answers, so that dangerous complaints don't get stuck behind minor ones.
 9. As the system, I want to turn that score into a priority level (Low, Medium, High, Critical), so that admins know what to look at first.
