@@ -35,17 +35,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         $priority = determinePriority($urgencyScore, (bool) $isImmediateDanger);
+        $department = getDepartmentForCategory($detectedCategory);
+        $responseDeadline = calculateResponseDeadline($priority);
 
         $stmt = $pdo->prepare("
             INSERT INTO complaints
                 (reference_number, title, description, detected_category,
-                 urgency_score, priority, is_immediate_danger,
-                 affects_multiple_students, was_previously_reported,
+                 urgency_score, priority, assigned_department, response_deadline,
+                 is_immediate_danger, affects_multiple_students, was_previously_reported,
                  is_anonymous, student_name, student_email)
             VALUES
                 (:reference_number, :title, :description, :detected_category,
-                 :urgency_score, :priority, :is_immediate_danger,
-                 :affects_multiple_students, :was_previously_reported,
+                 :urgency_score, :priority, :assigned_department, :response_deadline,
+                 :is_immediate_danger, :affects_multiple_students, :was_previously_reported,
                  :is_anonymous, :student_name, :student_email)
         ");
 
@@ -56,6 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'detected_category' => $detectedCategory,
             'urgency_score' => $urgencyScore,
             'priority' => $priority,
+            'assigned_department' => $department,
+            'response_deadline' => $responseDeadline,
             'is_immediate_danger' => $isImmediateDanger,
             'affects_multiple_students' => $affectsMultiple,
             'was_previously_reported' => $wasPreviouslyReported,
@@ -67,7 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: index.php?submitted=1'
             . '&ref=' . urlencode($referenceNumber)
             . '&category=' . urlencode($detectedCategory)
-            . '&priority=' . urlencode($priority));
+            . '&priority=' . urlencode($priority)
+            . '&department=' . urlencode($department)
+            . '&deadline=' . urlencode($responseDeadline));
         exit;
     }
 }

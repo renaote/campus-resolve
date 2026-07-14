@@ -12,6 +12,12 @@
         <?php if (isset($_GET['priority'])): ?>
             <p>Priority: <strong><?= htmlspecialchars($_GET['priority']) ?></strong></p>
         <?php endif; ?>
+        <?php if (isset($_GET['department'])): ?>
+            <p>Assigned to: <strong><?= htmlspecialchars($_GET['department']) ?></strong></p>
+        <?php endif; ?>
+        <?php if (isset($_GET['deadline'])): ?>
+            <p>Expected response by: <strong><?= htmlspecialchars($_GET['deadline']) ?></strong></p>
+        <?php endif; ?>
         <p>Save this number - you'll need it to track your complaint.</p>
     </div>
 <?php endif; ?>

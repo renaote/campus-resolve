@@ -109,7 +109,7 @@ function calculateUrgencyScore(
     foreach ($safetyWords as $word) {
         if (str_contains($text, $word)) {
             $score += 25;
-            break; // only count this once, even if multiple safety words appear
+            break;
         }
     }
 
@@ -137,7 +137,6 @@ function calculateUrgencyScore(
         $score += 10;
     }
 
-    // Cap at 100 so scores never go above the scale
     return min($score, 100);
 }
 
@@ -159,4 +158,43 @@ function determinePriority(int $urgencyScore, bool $isImmediateDanger): string {
     } else {
         return 'Low';
     }
+}
+
+// Maps each category to the department that should handle it. Unclassified
+// complaints go to Student Affairs by default, since that's the closest
+// thing to a general front desk for anything that doesn't fit elsewhere.
+function getDepartmentForCategory(string $category): string {
+    $departmentMap = [
+        'Safety and Misconduct' => 'Campus Security',
+        'Academic' => 'Faculty Administration',
+        'Finance' => 'Finance Office',
+        'Facilities' => 'Facilities Department',
+        'IT Support' => 'IT Support',
+        'Unclassified' => 'Student Affairs',
+    ];
+
+    return $departmentMap[$category] ?? 'Student Affairs';
+}
+
+// Works out a response deadline based on priority. Returns a full
+// DATETIME string ready to save straight into the database.
+function calculateResponseDeadline(string $priority): string {
+    $now = new DateTime();
+
+    switch ($priority) {
+        case 'Critical':
+            $now->modify('+2 hours');
+            break;
+        case 'High':
+            $now->modify('+24 hours');
+            break;
+        case 'Medium':
+            $now->modify('+3 days');
+            break;
+        default: // Low
+            $now->modify('+5 days');
+            break;
+    }
+
+    return $now->format('Y-m-d H:i:s');
 }
