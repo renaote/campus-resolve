@@ -2,6 +2,14 @@
 
 <p>Submit a complaint about a campus issue and get it routed to the right department automatically.</p>
 
+<?php if (isset($_GET['submitted']) && isset($_GET['ref'])): ?>
+    <div>
+        <p>Complaint submitted successfully.</p>
+        <p>Your reference number: <strong><?= htmlspecialchars($_GET['ref']) ?></strong></p>
+        <p>Save this number - you'll need it to track your complaint.</p>
+    </div>
+<?php endif; ?>
+
 <a href="submit.php">Submit a Complaint</a>
 <a href="track.php">Track a Complaint</a>
 

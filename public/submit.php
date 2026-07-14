@@ -1,5 +1,6 @@
 <?php
 require '../config/database.php';
+require '../includes/functions.php';
 
 $errors = [];
 
@@ -25,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
+        $referenceNumber = generateReferenceNumber($pdo);
+
         $stmt = $pdo->prepare("
             INSERT INTO complaints
                 (reference_number, title, description, is_immediate_danger,
@@ -35,10 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  :affects_multiple_students, :was_previously_reported, :is_anonymous,
                  :student_name, :student_email)
         ");
-
-        // Reference number is just a placeholder for now - proper generation
-        // logic comes in the next commit
-        $referenceNumber = 'CR-TEMP';
 
         $stmt->execute([
             'reference_number' => $referenceNumber,
@@ -52,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'student_email' => $isAnonymous ? null : $studentEmail,
         ]);
 
-        header('Location: index.php?submitted=1');
+        header('Location: index.php?submitted=1&ref=' . urlencode($referenceNumber));
         exit;
     }
 }
