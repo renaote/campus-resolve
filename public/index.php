@@ -24,5 +24,6 @@
 
 <a href="submit.php">Submit a Complaint</a>
 <a href="track.php">Track a Complaint</a>
+<a href="admin.php">Admin Dashboard</a>
 
 <?php require '../includes/footer.php'; ?>
