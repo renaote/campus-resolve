@@ -77,6 +77,16 @@ function getComplaintById(PDO $pdo, int $id): ?array {
     return $result ?: null;
 }
 
+// Looks up a complaint by its reference number instead of its database id -
+// this is what students use, since they only ever see the reference
+// number (like CR-2026-0001), never the internal id.
+function getComplaintByReference(PDO $pdo, string $referenceNumber): ?array {
+    $stmt = $pdo->prepare("SELECT * FROM complaints WHERE reference_number = :ref");
+    $stmt->execute(['ref' => $referenceNumber]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result ?: null;
+}
+
 // Updates just the status field for one complaint. If the new status is
 // Resolved, also stamps resolved_at with the current time.
 function updateComplaintStatus(PDO $pdo, int $id, string $status): void {
