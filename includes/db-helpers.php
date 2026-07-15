@@ -16,6 +16,33 @@ function getAllComplaints(PDO $pdo): array {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Same as above, but only returns complaints matching whichever filters
+// were actually passed in. Building the WHERE clause piece by piece so
+// I only filter on things the admin actually picked, not everything.
+function getFilteredComplaints(PDO $pdo, array $filters): array {
+    $sql = "SELECT * FROM complaints WHERE 1=1";
+    $params = [];
+
+    if (!empty($filters['priority'])) {
+        $sql .= " AND priority = :priority";
+        $params['priority'] = $filters['priority'];
+    }
+    if (!empty($filters['category'])) {
+        $sql .= " AND detected_category = :category";
+        $params['category'] = $filters['category'];
+    }
+    if (!empty($filters['status'])) {
+        $sql .= " AND status = :status";
+        $params['status'] = $filters['status'];
+    }
+
+    $sql .= " ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), submitted_at ASC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 // Quick counts for the dashboard summary cards
 function getComplaintCounts(PDO $pdo): array {
     $counts = [
@@ -40,4 +67,31 @@ function getComplaintCounts(PDO $pdo): array {
     ")->fetchColumn();
 
     return $counts;
+}
+
+// Gets one complaint by its database id - used on the details page
+function getComplaintById(PDO $pdo, int $id): ?array {
+    $stmt = $pdo->prepare("SELECT * FROM complaints WHERE id = :id");
+    $stmt->execute(['id' => $id]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result ?: null;
+}
+
+// Updates just the status field for one complaint. If the new status is
+// Resolved, also stamps resolved_at with the current time.
+function updateComplaintStatus(PDO $pdo, int $id, string $status): void {
+    if ($status === 'Resolved') {
+        $stmt = $pdo->prepare("
+            UPDATE complaints
+            SET status = :status, resolved_at = NOW()
+            WHERE id = :id
+        ");
+    } else {
+        $stmt = $pdo->prepare("
+            UPDATE complaints
+            SET status = :status
+            WHERE id = :id
+        ");
+    }
+    $stmt->execute(['status' => $status, 'id' => $id]);
 }
