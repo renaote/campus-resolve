@@ -26,14 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fullText = $title . ' ' . $description;
 
         $detectedCategory = detectCategory($fullText);
-
         $urgencyScore = calculateUrgencyScore(
             $fullText,
             (bool) $isImmediateDanger,
             (bool) $affectsMultiple,
             (bool) $wasPreviouslyReported
         );
-
         $priority = determinePriority($urgencyScore, (bool) $isImmediateDanger);
         $department = getDepartmentForCategory($detectedCategory);
         $responseDeadline = calculateResponseDeadline($priority);
@@ -78,58 +76,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$breadcrumb = [
+    ['label' => 'Home', 'url' => 'index.php'],
+    ['label' => 'Submit a complaint'],
+];
 require '../includes/header.php';
 ?>
 
-<h2>Submit a Complaint</h2>
+<div class="page-narrow">
+    <div class="page-title">Submit a complaint</div>
 
-<?php if (!empty($errors)): ?>
-    <ul>
-        <?php foreach ($errors as $error): ?>
-            <li><?= htmlspecialchars($error) ?></li>
-        <?php endforeach; ?>
+    <?php if (!empty($errors)): ?>
+        <ul class="error-list">
+            <?php foreach ($errors as $error): ?>
+                <li><?= htmlspecialchars($error) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+
+    <p class="page-intro">Use this form to report any issue affecting you or others on campus, from safety concerns to academic, financial, facilities, or IT problems. Before you submit, please confirm the following:</p>
+    <ul class="checklist">
+        <li>You've described the issue in enough detail for it to be understood and acted on</li>
+        <li>This is not a medical or physical emergency requiring immediate emergency services</li>
+        <li>You understand your complaint will be automatically classified and routed to a department</li>
+        <li>If submitting anonymously, you understand the department won't be able to contact you directly</li>
     </ul>
-<?php endif; ?>
 
-<form method="POST">
-    <label>Complaint title
-        <input type="text" name="title" value="<?= htmlspecialchars($_POST['title'] ?? '') ?>">
-    </label>
+    <form method="POST" class="form-section">
+        <div class="form-group">
+            <label for="title">Complaint title</label>
+            <input type="text" id="title" name="title" value="<?= htmlspecialchars($_POST['title'] ?? '') ?>">
+        </div>
 
-    <label>Description
-        <textarea name="description" rows="5"><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
-    </label>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="5"><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
+        </div>
 
-    <label>
-        <input type="checkbox" name="is_immediate_danger">
-        This involves immediate danger
-    </label>
+        <div class="checkbox-grid">
+            <label class="checkbox-group">
+                <input type="checkbox" name="is_immediate_danger">
+                This involves immediate danger
+            </label>
 
-    <label>
-        <input type="checkbox" name="affects_multiple_students">
-        This affects multiple students
-    </label>
+            <label class="checkbox-group">
+                <input type="checkbox" name="affects_multiple_students">
+                This affects multiple students
+            </label>
 
-    <label>
-        <input type="checkbox" name="was_previously_reported">
-        I've reported this before
-    </label>
+            <label class="checkbox-group">
+                <input type="checkbox" name="was_previously_reported">
+                I've reported this before
+            </label>
 
-    <label>
-        <input type="checkbox" name="is_anonymous" id="anonymous">
-        Submit anonymously
-    </label>
+            <label class="checkbox-group">
+                <input type="checkbox" name="is_anonymous" id="anonymous">
+                Submit anonymously
+            </label>
+        </div>
 
-    <div id="identity-fields">
-        <label>Your name
-            <input type="text" name="student_name">
-        </label>
-        <label>Your email
-            <input type="email" name="student_email">
-        </label>
-    </div>
+        <div class="form-group">
+            <label for="student_name">Your name</label>
+            <input type="text" id="student_name" name="student_name">
+        </div>
 
-    <button type="submit">Submit Complaint</button>
-</form>
+        <div class="form-group">
+            <label for="student_email">Your email</label>
+            <input type="email" id="student_email" name="student_email">
+        </div>
+
+        <button type="submit">Submit complaint</button>
+    </form>
+</div>
 
 <?php require '../includes/footer.php'; ?>

@@ -2,7 +2,6 @@
 require '../config/database.php';
 require '../includes/db-helpers.php';
 
-// Read whichever filters were picked from the dropdowns (if any)
 $filters = [
     'priority' => $_GET['priority'] ?? '',
     'category' => $_GET['category'] ?? '',
@@ -17,57 +16,65 @@ $complaints = $hasActiveFilter
 
 $counts = getComplaintCounts($pdo);
 
+function statusClass(string $status): string {
+    return 'status-' . strtolower(str_replace(' ', '-', $status));
+}
+
+$breadcrumb = [
+    ['label' => 'Home', 'url' => 'index.php'],
+    ['label' => 'Admin dashboard'],
+];
 require '../includes/header.php';
 ?>
 
-<h2>Admin Dashboard</h2>
+<div class="page-title">Admin dashboard</div>
 
-<div>
-    <p>Total Complaints: <strong><?= $counts['total'] ?></strong></p>
-    <p>Critical Complaints: <strong><?= $counts['critical'] ?></strong></p>
-    <p>Open Complaints: <strong><?= $counts['open'] ?></strong></p>
-    <p>Resolved Complaints: <strong><?= $counts['resolved'] ?></strong></p>
+<div class="stat-strip">
+    <div class="stat-item stat-total">
+        <span class="count"><?= $counts['total'] ?></span>
+        <span class="label">Total</span>
+    </div>
+    <div class="stat-item stat-critical">
+        <span class="count"><?= $counts['critical'] ?></span>
+        <span class="label">Critical</span>
+    </div>
+    <div class="stat-item stat-open">
+        <span class="count"><?= $counts['open'] ?></span>
+        <span class="label">Open</span>
+    </div>
+    <div class="stat-item stat-resolved">
+        <span class="count"><?= $counts['resolved'] ?></span>
+        <span class="label">Resolved</span>
+    </div>
 </div>
 
-<form method="GET">
-    <label>Priority
-        <select name="priority">
-            <option value="">All</option>
-            <?php foreach (['Critical', 'High', 'Medium', 'Low'] as $option): ?>
-                <option value="<?= $option ?>" <?= $filters['priority'] === $option ? 'selected' : '' ?>>
-                    <?= $option ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </label>
+<form method="GET" class="filter-form">
+    <select name="priority">
+        <option value="">All priorities</option>
+        <?php foreach (['Critical', 'High', 'Medium', 'Low'] as $option): ?>
+            <option value="<?= $option ?>" <?= $filters['priority'] === $option ? 'selected' : '' ?>><?= $option ?></option>
+        <?php endforeach; ?>
+    </select>
 
-    <label>Category
-        <select name="category">
-            <option value="">All</option>
-            <?php foreach (['Safety and Misconduct', 'Academic', 'Finance', 'Facilities', 'IT Support', 'Unclassified'] as $option): ?>
-                <option value="<?= $option ?>" <?= $filters['category'] === $option ? 'selected' : '' ?>>
-                    <?= $option ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </label>
+    <select name="category">
+        <option value="">All categories</option>
+        <?php foreach (['Safety and Misconduct', 'Academic', 'Finance', 'Facilities', 'IT Support', 'Unclassified'] as $option): ?>
+            <option value="<?= $option ?>" <?= $filters['category'] === $option ? 'selected' : '' ?>><?= $option ?></option>
+        <?php endforeach; ?>
+    </select>
 
-    <label>Status
-        <select name="status">
-            <option value="">All</option>
-            <?php foreach (['Submitted', 'Under Review', 'In Progress', 'Resolved'] as $option): ?>
-                <option value="<?= $option ?>" <?= $filters['status'] === $option ? 'selected' : '' ?>>
-                    <?= $option ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </label>
+    <select name="status">
+        <option value="">All statuses</option>
+        <?php foreach (['Submitted', 'Under Review', 'In Progress', 'Resolved'] as $option): ?>
+            <option value="<?= $option ?>" <?= $filters['status'] === $option ? 'selected' : '' ?>><?= $option ?></option>
+        <?php endforeach; ?>
+    </select>
 
-    <button type="submit">Filter</button>
-    <a href="admin.php">Clear filters</a>
+    <button type="submit" class="btn-primary">Filter</button>
+    <a href="admin.php" class="btn-secondary">Clear</a>
 </form>
 
-<table border="1" cellpadding="6">
+<table>
     <thead>
         <tr>
             <th>Reference</th>
@@ -82,19 +89,17 @@ require '../includes/header.php';
     </thead>
     <tbody>
         <?php if (empty($complaints)): ?>
-            <tr>
-                <td colspan="8">No complaints match this filter.</td>
-            </tr>
+            <tr><td colspan="8">No complaints match this filter.</td></tr>
         <?php else: ?>
             <?php foreach ($complaints as $complaint): ?>
                 <tr>
-                    <td><?= htmlspecialchars($complaint['reference_number']) ?></td>
+                    <td class="ref-number"><?= htmlspecialchars($complaint['reference_number']) ?></td>
                     <td><?= htmlspecialchars($complaint['title']) ?></td>
                     <td><?= htmlspecialchars($complaint['detected_category']) ?></td>
-                    <td><?= htmlspecialchars($complaint['priority']) ?></td>
-                    <td><?= htmlspecialchars($complaint['assigned_department']) ?></td>
-                    <td><?= htmlspecialchars($complaint['status']) ?></td>
-                    <td><?= htmlspecialchars($complaint['response_deadline']) ?></td>
+                    <td><span class="badge priority-<?= strtolower($complaint['priority']) ?>"><?= htmlspecialchars($complaint['priority']) ?></span></td>
+                    <td><?= htmlspecialchars($complaint['assigned_department'] ?: '-') ?></td>
+                    <td><span class="badge <?= statusClass($complaint['status']) ?>"><?= htmlspecialchars($complaint['status']) ?></span></td>
+                    <td><?= htmlspecialchars($complaint['response_deadline'] ?? '-') ?></td>
                     <td><a href="details.php?id=<?= $complaint['id'] ?>">View</a></td>
                 </tr>
             <?php endforeach; ?>

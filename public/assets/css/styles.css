@@ -1,0 +1,510 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f5f2ec;
+    color: #2b2622;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+a {
+    color: #7a1f1f;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.top-bar {
+    background-color: #7a1f1f;
+    padding: 20px 32px;
+}
+
+.top-bar-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.site-icon {
+    width: 36px;
+    height: 36px;
+}
+
+.site-name {
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.site-name:hover {
+    text-decoration: none;
+    opacity: 0.9;
+}
+
+.breadcrumb {
+    background: #ede7db;
+    padding: 12px 32px;
+    font-size: 13px;
+    color: #5c554a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.breadcrumb a {
+    color: #5c554a;
+}
+
+.breadcrumb .crumb-sep {
+    color: #b8ac96;
+}
+
+.breadcrumb .crumb-current {
+    color: #2b2622;
+    font-weight: bold;
+}
+
+.secondary-nav {
+    background: white;
+    padding: 0 32px;
+    display: flex;
+    border-bottom: 2px solid #d6d0c4;
+}
+
+.secondary-nav a {
+    padding: 16px 20px;
+    font-size: 15px;
+    color: #5c554a;
+    border-bottom: 3px solid transparent;
+}
+
+.secondary-nav a:hover {
+    color: #7a1f1f;
+    text-decoration: none;
+}
+
+.secondary-nav a.active {
+    color: #7a1f1f;
+    font-weight: bold;
+    border-bottom-color: #7a1f1f;
+}
+
+.page-content {
+    background: white;
+    padding: 40px 32px;
+    width: 100%;
+    flex: 1;
+}
+
+/* Wraps a whole page's content (title, intro text, checklist, form -
+   everything) in one consistent centered column. Used on pages that
+   are mostly a form or a short block of text, so nothing is left
+   hugging one edge while something else floats centered separately.
+   Tables/dashboards don't use this - they stay full width. */
+.page-narrow {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #2b2622;
+    margin: 0 0 18px 0;
+}
+
+.page-intro {
+    font-size: 16px;
+    color: #4b4438;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.checklist {
+    font-size: 15px;
+    color: #4b4438;
+    padding-left: 22px;
+    line-height: 2.1;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    color: #2b2622;
+    margin-bottom: 7px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group textarea,
+.form-group select {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #c9c1b1;
+    border-radius: 6px;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    background: white;
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 8px;
+    margin: 6px 0 24px 0;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+}
+
+.checkbox-group input {
+    width: auto;
+}
+
+.form-section {
+    padding-top: 4px;
+}
+
+.btn-primary, button[type="submit"] {
+    background: #7a1f1f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+}
+
+.btn-primary:hover, button[type="submit"]:hover {
+    background: #5c1717;
+}
+
+.btn-secondary {
+    background: white;
+    color: #2b2622;
+    border: 1px solid #c9c1b1;
+    border-radius: 6px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: #f0ece3;
+}
+
+.error-list {
+    background: #fbe9e9;
+    border: 1px solid #e3b3b3;
+    border-radius: 8px;
+    color: #7a1f1f;
+    padding: 14px 22px;
+    margin: 0 0 18px 0;
+    font-size: 14px;
+}
+
+.confirmation-box {
+    background: white;
+    border: 1px solid #d6d0c4;
+    border-left: 4px solid #5c7a5c;
+    border-radius: 8px;
+    padding: 20px 22px;
+    margin: 22px 0;
+}
+
+.confirmation-box p {
+    margin: 7px 0;
+    font-size: 14px;
+}
+
+.not-found {
+    color: #7a1f1f;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.danger-notice {
+    background: #fbe9e9;
+    border: 1px solid #e3b3b3;
+    border-radius: 8px;
+    color: #7a1f1f;
+    padding: 16px 22px;
+    margin: 18px 0;
+    font-size: 14px;
+}
+
+.stat-strip {
+    display: flex;
+    border: 1px solid #d6d0c4;
+    border-radius: 10px;
+    background: white;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    flex: 1;
+    text-align: center;
+    padding: 22px 0;
+    border-right: 1px dashed #c9c1b1;
+}
+
+.stat-item:last-child {
+    border-right: none;
+}
+
+.stat-item .count {
+    font-size: 34px;
+    font-weight: bold;
+    color: #2b2622;
+    display: block;
+}
+
+.stat-item.stat-total .count {
+    color: #2b2622;
+}
+
+.stat-item.stat-critical .count {
+    color: #7a1f1f;
+}
+
+.stat-item.stat-open .count {
+    color: #1e5c8a;
+}
+
+.stat-item.stat-resolved .count {
+    color: #4b7a4b;
+}
+
+.stat-item .label {
+    font-size: 12px;
+    color: #8a8272;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+    display: block;
+}
+
+.filter-form {
+    display: flex;
+    gap: 10px;
+    padding: 20px 0;
+    flex-wrap: wrap;
+}
+
+.filter-form select {
+    max-width: 180px;
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 6px;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border: 1px solid #d6d0c4;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #7a1f1f;
+}
+
+thead th {
+    color: white;
+    text-align: left;
+    padding: 13px 14px;
+    font-size: 12px;
+}
+
+tbody td {
+    padding: 13px 14px;
+    border-top: 1px solid #ede7db;
+    font-size: 14px;
+    color: #2b2622;
+}
+
+tbody tr:hover {
+    background-color: #faf8f3;
+}
+
+.ref-number {
+    font-weight: bold;
+    color: #2b2622;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.priority-critical { background: #7a1f1f; color: white; }
+.priority-high     { background: #b45309; color: white; }
+.priority-medium   { background: #b8862f; color: white; }
+.priority-low      { background: #6b6558; color: white; }
+
+.status-submitted    { background: white; color: #6b6558; border-color: #c9c1b1; }
+.status-under-review { background: white; color: #8a5a2b; border-color: #d9b98a; }
+.status-in-progress  { background: white; color: #1e5c8a; border-color: #a8c9de; }
+.status-resolved     { background: white; color: #4b6b4b; border-color: #a9c4a9; }
+
+.detail-section {
+    background: white;
+    border: 1px solid #d6d0c4;
+    border-radius: 8px;
+    padding: 22px;
+    margin-bottom: 18px;
+}
+
+.detail-section h3 {
+    font-size: 16px;
+    color: #2b2622;
+    border-bottom: 1px solid #ede7db;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.detail-section p {
+    margin: 7px 0;
+    font-size: 14px;
+}
+
+.faq-item {
+    margin-bottom: 26px;
+}
+
+.faq-question {
+    font-size: 15px;
+    font-weight: bold;
+    color: #2b2622;
+    margin: 0 0 7px 0;
+}
+
+.faq-answer {
+    font-size: 14px;
+    color: #4b4438;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.dept-table td {
+    vertical-align: top;
+}
+
+.dept-name {
+    font-weight: bold;
+    color: #2b2622;
+}
+
+.dept-phone {
+    font-weight: bold;
+    color: #7a1f1f;
+}
+
+.how-it-works {
+    display: flex;
+    gap: 18px;
+    margin: 26px 0 30px 0;
+    flex-wrap: wrap;
+}
+
+.step-card {
+    flex: 1;
+    min-width: 200px;
+    background: #f9f7f2;
+    border: 1px solid #ede7db;
+    border-radius: 8px;
+    padding: 18px;
+}
+
+.step-number {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    background: #7a1f1f;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 26px;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.step-card h4 {
+    margin: 0 0 7px 0;
+    font-size: 14px;
+    color: #2b2622;
+}
+
+.step-card p {
+    margin: 0;
+    font-size: 13px;
+    color: #6b6558;
+    line-height: 1.5;
+}
+
+.emergency-callout {
+    background: #fbe9e9;
+    border: 1px solid #e3b3b3;
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 26px 0;
+    font-size: 14px;
+    color: #4b4438;
+}
+
+.emergency-callout strong {
+    color: #7a1f1f;
+}
+
+.site-footer {
+    background: #7a1f1f;
+    color: #f0dede;
+    padding: 20px 32px;
+    margin-top: 40px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.site-footer strong {
+    color: white;
+}
