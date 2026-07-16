@@ -1,5 +1,3 @@
-
-```
 # CampusResolve
 
 A web app for submitting and tracking campus complaints, built with PHP and MySQL. When a complaint comes in, it automatically works out how urgent it is, picks a category, and routes it to the right department - no manual sorting needed.
@@ -77,8 +75,10 @@ If the URL doesn't work, make sure the folder is named campus-resolve - that nam
 
 ## Things I'd add
 
-Real authentication instead of an open admin dashboard. Export to CSV. Email notifications on status change. A better classification approach with more keywords or actual NLP.
+Real authentication instead of an open admin dashboard.
+Export to CSV. Email notifications on status change.
+ A better classification approach with more keywords or actual NLP.
 
 ## Author
-Renate 
-```
+
+Renate
